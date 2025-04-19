@@ -1,0 +1,10 @@
+# Ignore everything
+*
+
+# Whitelist:
+!.gitignore
+!README.md
+!_targets.R
+!.qmd
+!R/
+!R/**
