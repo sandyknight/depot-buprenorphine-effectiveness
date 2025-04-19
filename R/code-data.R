@@ -173,6 +173,7 @@ code_data_variables <- function(dt) {
   dt <-
     dt |>
     filter(year > 2020, year < 2025)
+
   readr::write_rds(dt, "data/model-data.rds")
   dt
 }
