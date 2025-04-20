@@ -15,10 +15,13 @@ tar_option_set(
     "clock",
     "tidyr",
     "tibble",
+    "tidyselect",
     "MatchIt",
     "cobalt",
     "glmmTMB",
-    "broom.mixed"
+    "broom.mixed",
+    "flextable",
+    "scales"
   ),
   # Faster {targets}; requires {qs2}
   format = "qs",
@@ -57,6 +60,11 @@ list(
     name = model_data,
     command = code_data_variables(cleaned_data)
   ),
+  # Summarise dataset
+  tar_target(
+    name = model_data_summary,
+    command = summarise_sample(model_data)
+  ),
   # Propensity score matching ------------------------------------------------
   # Run PSM model
   tar_target(
@@ -68,9 +76,12 @@ list(
     name = matched_data,
     command = extract_matched_data(match_model)
   ),
+  # Balance table
+  tar_target(
+    name = balance_table,
+    command = cobalt::bal.tab(match_model)
+  ),
   # Fit mixed-effect logistic regressions ------------------------------------
-
-  # Individual targets for model_data
   tar_target(
     model_data_died_fit,
     fit_random_effects(model_data, "died")
