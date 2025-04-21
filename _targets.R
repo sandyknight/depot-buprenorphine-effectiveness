@@ -69,7 +69,7 @@ list(
   # Run PSM model
   tar_target(
     name = match_model,
-    command = match_data(model_dt = model_data, clean_dt = cleaned_data)
+    command = ps_match_data(model_dt = model_data, clean_dt = cleaned_data)
   ),
   # Get PSM matched dataset
   tar_target(

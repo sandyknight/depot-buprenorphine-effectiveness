@@ -1,7 +1,7 @@
 # R/psm.R
 # This is divided into two short functions so that the PSM model
 # is accesible as an object for diagnostics.
-match_data <-
+ps_match_data <-
   function(model_dt, clean_dt) {
     njy <- unique(clean_dt[, .(client_random_id, n_jy)])
 
@@ -24,7 +24,7 @@ match_data <-
   }
 
 extract_matched_data <- function(match_model) {
-  m_data <- MatchIt::match_data(match_model)
+  m_data <- match_data(match_model)
 
   m_data
 }
