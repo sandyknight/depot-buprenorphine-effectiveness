@@ -4,7 +4,6 @@
 
 # Load packages
 library(targets)
-library(tarchetypes)
 # Options:
 tar_option_set(
   # Require packages

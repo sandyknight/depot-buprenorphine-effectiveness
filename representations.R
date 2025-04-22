@@ -50,33 +50,48 @@ f <- function(x) {
   )
 }
 
+class(repres[["triaged"]][1])
+
 repres <-
   repres |>
-    mutate(across(
-      starts_with("triaged"),
-      \(x) {
-        if_else(
-          disd > x |
-            is.na(x) |
-            x >= disd %m+% months(6) |
-            n_jy == as.integer(stringr::str_remove(cur_column(), "triaged.d")),
-          as.IDate("1000-01-01"),
-          disd
-        )
-      }, .names = 'repres_date.{.col}' 
-    )) |>
-    rowwise() |>
-    mutate(scne.repres_triage_jy = max(c_across(starts_with("repres_date")), na.rm = TRUE)) |>
-    ungroup() |>
-    mutate(scrn.repres_triage_jy = if_else(
+  mutate(
+    across(
+      where(is.Date),
+      as.Date
+    )
+  )
+
+repres <-
+  repres |>
+  mutate(across(
+    starts_with("triaged"),
+    \(x) {
+      if_else(
+        disd > x |
+          is.na(x) |
+          x >= disd %m+% months(6) |
+          n_jy == as.integer(stringr::str_remove(cur_column(), "triaged.d")),
+        as.IDate("1000-01-01"),
+        disd
+      )
+    },
+    .names = 'repres_date.{.col}'
+  )) |>
+  rowwise() |>
+  mutate(
+    scne.repres_triage_jy = max(
+      c_across(starts_with("repres_date")),
+      na.rm = TRUE
+    )
+  ) |>
+  ungroup() |>
+  mutate(
+    scrn.repres_triage_jy = if_else(
       scnr.repres_triage_jy == as.IDate("1000-01-01"),
       as.IDate(NA),
       scnr.repres_triage_jy
-    )) |>
-    select(client_random_id, n_jy, starts_with("scnr"))
+    )
+  ) |>
+  select(client_random_id, n_jy, starts_with("scnr"))
 
 dt <- merge(dt, repres, by = c("client_random_id", "n_jy", "disd"))
-
-
-
-
