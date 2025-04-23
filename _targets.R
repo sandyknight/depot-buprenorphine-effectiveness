@@ -80,7 +80,9 @@ list(
     name = balance_table,
     command = cobalt::bal.tab(match_model)
   ),
+
   # Fit mixed-effect logistic regressions ------------------------------------
+
   tar_target(
     model_data_died_fit,
     fit_random_effects(model_data, "died")
@@ -100,7 +102,7 @@ list(
     matched_data_successful_completion_fit,
     fit_random_effects(matched_data, "successful_completion")
   ),
-
+  # Summarise mixed effects logistic regressions ------------------------------
   tar_target(
     model_data_died_summary,
     summarise_fit(model_data_died_fit)
@@ -121,18 +123,99 @@ list(
     summarise_fit(matched_data_successful_completion_fit)
   ),
 
+  # Fit fixed effects logistic regressions -----------------------------------
+
+  tar_target(
+    model_data_died_fit_fixef,
+    fit_fixed_effects(model_data, "died")
+  ),
+
+  tar_target(
+    model_data_successful_completion_fit_fixef,
+    fit_fixed_effects(model_data, "successful_completion")
+  ),
+
+  tar_target(
+    matched_data_died_fit_fixef,
+    fit_fixed_effects(matched_data, "died")
+  ),
+
+  tar_target(
+    matched_data_successful_completion_fit_fixef,
+    fit_fixed_effects(matched_data, "successful_completion")
+  ),
+  # Summarise fixed effects logistic regressions -------------------------------
+  tar_target(
+    model_data_died_summary_fixef,
+    summarise_fit(model_data_died_fit_fixef)
+  ),
+
+  tar_target(
+    model_data_successful_completion_summary_fixef,
+    summarise_fit(model_data_successful_completion_fit_fixef)
+  ),
+
+  tar_target(
+    matched_data_died_summary_fixef,
+    summarise_fit(matched_data_died_fit_fixef)
+  ),
+
+  tar_target(
+    matched_data_successful_completion_summary_fixef,
+    summarise_fit(matched_data_successful_completion_fit_fixef)
+  ),
+  # Combine model summaries
   tar_target(
     all_model_summaries,
     bind_rows(
       model_data_died_summary %>%
-        mutate(dataset = "unmatched", outcome = "died"),
+        mutate(
+          dataset = "unmatched",
+          outcome = "died",
+          model = "random effects"
+        ),
       model_data_successful_completion_summary %>%
-        mutate(dataset = "unmatched", outcome = "successful completion"),
+        mutate(
+          dataset = "unmatched",
+          outcome = "successful completion",
+          model = "random effects"
+        ),
       matched_data_died_summary %>%
-        mutate(dataset = "matched", outcome = "died"),
+        mutate(
+          dataset = "matched",
+          outcome = "died",
+          model = "random effects"
+        ),
       matched_data_successful_completion_summary %>%
-        mutate(dataset = "matched", outcome = "successful completion"),
-      .id = "model"
+        mutate(
+          dataset = "matched",
+          outcome = "successful completion",
+          model = "random effects"
+        ),
+      model_data_died_summary_fixef %>%
+        mutate(
+          dataset = "unmatched",
+          outcome = "died",
+          model = "fixed effecs"
+        ),
+      model_data_successful_completion_summary_fixef %>%
+        mutate(
+          dataset = "unmatched",
+          outcome = "successful completion",
+          model = "fixed effects"
+        ),
+      matched_data_died_summary_fixef %>%
+        mutate(
+          dataset = "matched",
+          outcome = "died",
+          model = "fixed effects"
+        ),
+      matched_data_successful_completion_summary_fixef %>%
+        mutate(
+          dataset = "matched",
+          outcome = "successful completion",
+          model = "fixed effects"
+        ),
     )
   )
 )
