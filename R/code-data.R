@@ -32,24 +32,10 @@ code_data_variables <- function(dt) {
 
   dt <-
     dt |>
-    mutate(t = if_else(phbudi_any == 1 & time_since_submod <= 12, 1L, 0L)) |>
-    mutate(t = if_else(is.na(t), 0, t)) |>
-    group_by(
-      client_random_id,
-      triaged,
-      year,
-      disd,
-      disrsn,
-      age,
-      sex,
-      utla23cd,
-      injstat,
-      housing_start,
-      homeless_start,
-      disable,
-      drug_benzodiazepine
-    ) |>
-    summarise(t = max(t), .groups = "drop")
+    mutate(
+      t = as.numeric(phbudi_any == 1 & time_since_submod <= 12),
+      t = dplyr::if_else(is.na(t), 0, t)
+    )
 
   # Outcomes (binary) ----------------------------------------------------------
 
@@ -69,10 +55,9 @@ code_data_variables <- function(dt) {
   # 1. Age group (categorical, 5)
 
   # Reduce number of age groups from 11 to 5 to mitigate problems
-  # with separation. There's an explanation of separation and the
-  # valid methods of resolving it here:
+  # with separation in logistic regression. There's an explanation
+  # of separation and the valid methods of resolving it here:
   # https://www.bookdown.org/rwnahhas/RMPH/blr-separation.html
-
   dt <-
     dt |>
     dplyr::mutate(
@@ -86,21 +71,11 @@ code_data_variables <- function(dt) {
       )
     )
 
-  # Sort the factor levels
-  agelevels <-
-    tibble::as_tibble(dt) |> pull(age) |> unique()
-
-  dt <-
-    dt |>
-    mutate(age = factor(age, sort(agelevels)))
-
   # 2. Sex (binary)
 
   dt <-
     dt |>
     mutate(sex = if_else(sex == "F", 1, 0))
-
-  dt
 
   # 3. Currently injecting (binary)
 
@@ -113,22 +88,7 @@ code_data_variables <- function(dt) {
         injstat,
         "Unknown"
       )
-    ) |>
-    mutate(
-      currently_injecting = factor(
-        injstat,
-        levels = c(
-          "Never injected",
-          "Previously injected",
-          "Currently injecting",
-          "Unknown"
-        )
-      )
     )
-
-  dt <-
-    dt |>
-    filter(currently_injecting != "Unknown")
 
   # 4. Any disability
 
@@ -149,31 +109,18 @@ code_data_variables <- function(dt) {
         0
       )
     )
-
+  colnames(as_tibble(dt))
   dt <-
     dt |>
     mutate(year = year(disd)) |>
-    select(
-      year,
-      client_random_id,
-      sex,
-      age,
-      utla23cd,
-      drug_benzodiazepine,
-      t:last_col()
-    ) |>
+    select(-phbudi_any, -submoddt, -date_order, -time_since_submod) |>
     unique()
 
-  dt <- as_tibble(dt)
+  dt <- data.table::as.data.table(dt)
 
-  dt |>
-    group_by(t) |>
-    tally()
+  factor_cols <- c("age", "injstat", "housing_problem")
 
-  dt <-
-    dt |>
-    filter(year > 2020, year < 2025)
+  dt[, (factor_cols) := lapply(.SD, factor), .SDcols = factor_cols]
 
-  readr::write_rds(dt, "data/model-data.rds")
   dt
 }

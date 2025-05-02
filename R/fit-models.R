@@ -1,14 +1,15 @@
 # Fixed-effects logistic regression
 
 fit_fixed_effects <-
-  function(dt, outcome) {
+  function(dt, outcome, weights = NULL) {
     glm(
       get(outcome) ~
         t +
-          age +
-          sex +
-          currently_injecting +
-          drug_benzodiazepine,
+        age +
+        sex +
+        currently_injecting +
+        drug_benzodiazepine,
+      weights = weights,
       family = binomial(link = "logit"),
       data = dt
     )
@@ -22,17 +23,18 @@ fit_fixed_effects <-
 # version
 
 fit_random_effects <-
-  function(dt, outcome) {
+  function(dt, outcome, weights = NULL) {
     glmmTMB::glmmTMB(
       get(outcome) ~
         t +
-          age +
-          sex +
-          currently_injecting +
-          drug_benzodiazepine +
-          (1 | utla23cd),
+        age +
+        sex +
+        currently_injecting +
+        drug_benzodiazepine +
+        (1 | utla23cd),
+      weights = weights,
       family = binomial,
       data = dt,
-      control = glmmTMB::glmmTMBControl(parallel = 4)
+      control = glmmTMB::glmmTMBControl(parallel = 8)
     )
   }

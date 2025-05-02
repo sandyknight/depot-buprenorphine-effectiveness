@@ -3,7 +3,5 @@ summarise_fit <-
   function(fit) {
     nm <- names(fit)
 
-    print(nm)
-
-    broom.mixed::tidy(fit, exponentiate = TRUE, conf.int = TRUE)
+    broom.mixed::tidy(fit, exponentiate = TRUE, conf.int = FALSE)
   }

@@ -12,17 +12,17 @@ load_sir_data <- function(sir_file = "data/SIR_table_for_VfM_linked.csv") {
 
   ## Use latest journeys only for comparing outcomes
   ## Get max n_jy per client
-  latest_journeys <- sir_dt[, .(max_njy = max(n_jy)), by = client_random_id]
+  # latest_journeys <- sir_dt[, .(max_njy = max(n_jy)), by = client_random_id]
 
   ## Join back and filter
-  sir_dt <-
-    data.table::merge.data.table(
-      sir_dt,
-      latest_journeys,
-      by = "client_random_id"
-    )
-
-  sir_dt <- sir_dt[n_jy == max_njy, ]
+  # sir_dt <-
+  #   data.table::merge.data.table(
+  #     sir_dt,
+  #     latest_journeys,
+  #     by = "client_random_id"
+  #   )
+  #
+  # sir_dt <- sir_dt[n_jy == max_njy, ]
 
   ## From here on I use {dtplyr} to manipulate the data
   ## it remains in the `data.table` format but can take

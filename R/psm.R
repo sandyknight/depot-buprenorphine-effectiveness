@@ -11,11 +11,11 @@ ps_match_data <-
       MatchIt::matchit(
         t ~
           n_jy +
-            sex +
-            age +
-            utla23cd +
-            currently_injecting +
-            housing_problem,
+          sex +
+          age +
+          utla23cd +
+          currently_injecting +
+          housing_problem,
         data = dt,
         method = "nearest"
       )
@@ -24,7 +24,7 @@ ps_match_data <-
   }
 
 extract_matched_data <- function(match_model) {
-  m_data <- match_data(match_model)
+  m_data <- MatchIt::match.data(match_model)
 
   m_data
 }

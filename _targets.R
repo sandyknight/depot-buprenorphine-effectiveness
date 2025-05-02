@@ -25,7 +25,7 @@ tar_option_set(
   # Faster {targets}; requires {qs2}
   format = "qs",
   # Parallel processing, requires {crew}
-  controller = crew::crew_controller_local(workers = 2, seconds_idle = 60)
+  controller = crew::crew_controller_local(workers = 8)
 )
 
 # Source scripts in R/
@@ -87,37 +87,31 @@ list(
     model_data_died_fit,
     fit_random_effects(model_data, "died")
   ),
-
   tar_target(
     model_data_successful_completion_fit,
     fit_random_effects(model_data, "successful_completion")
   ),
-
   tar_target(
     matched_data_died_fit,
-    fit_random_effects(matched_data, "died")
+    fit_random_effects(matched_data, "died", weight = weights)
   ),
-
   tar_target(
     matched_data_successful_completion_fit,
-    fit_random_effects(matched_data, "successful_completion")
+    fit_random_effects(matched_data, "successful_completion", weight = weights)
   ),
   # Summarise mixed effects logistic regressions ------------------------------
   tar_target(
     model_data_died_summary,
     summarise_fit(model_data_died_fit)
   ),
-
   tar_target(
     model_data_successful_completion_summary,
     summarise_fit(model_data_successful_completion_fit)
   ),
-
   tar_target(
     matched_data_died_summary,
     summarise_fit(matched_data_died_fit)
   ),
-
   tar_target(
     matched_data_successful_completion_summary,
     summarise_fit(matched_data_successful_completion_fit)
@@ -129,37 +123,31 @@ list(
     model_data_died_fit_fixef,
     fit_fixed_effects(model_data, "died")
   ),
-
   tar_target(
     model_data_successful_completion_fit_fixef,
     fit_fixed_effects(model_data, "successful_completion")
   ),
-
   tar_target(
     matched_data_died_fit_fixef,
-    fit_fixed_effects(matched_data, "died")
+    fit_fixed_effects(matched_data, "died", weight = weights)
   ),
-
   tar_target(
     matched_data_successful_completion_fit_fixef,
-    fit_fixed_effects(matched_data, "successful_completion")
+    fit_fixed_effects(matched_data, "successful_completion", weight = weights)
   ),
   # Summarise fixed effects logistic regressions -------------------------------
   tar_target(
     model_data_died_summary_fixef,
     summarise_fit(model_data_died_fit_fixef)
   ),
-
   tar_target(
     model_data_successful_completion_summary_fixef,
     summarise_fit(model_data_successful_completion_fit_fixef)
   ),
-
   tar_target(
     matched_data_died_summary_fixef,
     summarise_fit(matched_data_died_fit_fixef)
   ),
-
   tar_target(
     matched_data_successful_completion_summary_fixef,
     summarise_fit(matched_data_successful_completion_fit_fixef)
